@@ -1,8 +1,6 @@
 package Client;
 
 import Server.Question;
-
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
