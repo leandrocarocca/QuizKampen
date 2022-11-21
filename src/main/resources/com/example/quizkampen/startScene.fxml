@@ -9,7 +9,7 @@
    <children>
       <Pane layoutX="184.0" layoutY="78.0" prefHeight="200.0" prefWidth="200.0">
          <children>
-            <Button layoutX="52.0" layoutY="34.0" mnemonicParsing="false" text="Starta nytt spel" />
+            <Button fx:id="startNewButton" layoutX="52.0" layoutY="34.0" mnemonicParsing="false" text="Starta nytt spel" />
          </children>
       </Pane>
    </children>
