@@ -17,6 +17,8 @@ public class Client
                 BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
         ){
 
+        }
+                 /*
             String name = JOptionPane.showInputDialog("Skriv ditt namn: ");
             output.println(name);
             Object object = input.readObject();
@@ -39,7 +41,10 @@ public class Client
         {
             e.printStackTrace();
         }
+        }
 
+
+        */
     }
 
     public static void main(String[] args) throws IOException
