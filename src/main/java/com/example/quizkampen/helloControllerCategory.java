@@ -3,7 +3,7 @@ package com.example.quizkampen;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class HelloController {
+public class helloControllerCategory {
     @FXML
     private Label choiceOfCategoryScreen;
     private Label text;
