@@ -5,4 +5,6 @@ module com.example.quizkampen {
 
     opens com.example.quizkampen to javafx.fxml;
     exports com.example.quizkampen;
+    exports com.example.quizkampen.scoreScene;
+    opens com.example.quizkampen.scoreScene to javafx.fxml;
 }
