@@ -2,16 +2,19 @@ package Server.ServerQuestionLogic;
 
 import Server.Question;
 
-public class QuestionRound {
+import java.io.Serializable;
+
+public class QuestionRound  implements Serializable {
     Question question;
     int result;
 
     QuestionRound(Question question){
         this.question = question;
+        this.result = 0;
     }
 
-    public void checkResult(int answerIndex){
-        if (answerIndex == question.getCorrectAnswerindex()){
+    public void checkResult(){
+        if (result == question.getCorrectAnswerindex()){
             setResult(1);
         }
         else {

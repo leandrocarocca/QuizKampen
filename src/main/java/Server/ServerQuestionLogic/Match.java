@@ -3,17 +3,22 @@ package Server.ServerQuestionLogic;
 public class Match {
     private int player1Score = 0;
     private int player2Score = 0;
+
+    public int getCategoryAmount() {
+        return categoryAmount;
+    }
+
     int categoryAmount = 2;
 
-    boolean checkRemainingCategories(){
+    public boolean checkRemainingCategories(){
         return categoryAmount < 0;
     }
 
-    void createCategoryRound(String category){
-        new CategoryRound(category);
+    public CategoryRound createCategoryRound(String category){
+        return new CategoryRound(category);
     }
 
-    void scoreUpdater(boolean player1scored, boolean player2scored){
+    public void scoreUpdater(boolean player1scored, boolean player2scored){
         if (player1scored) {
             setPlayer1Score(getPlayer1Score() + 1);
         }
