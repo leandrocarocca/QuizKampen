@@ -2,6 +2,7 @@ package Server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Categories
 {
@@ -20,6 +21,8 @@ public class Categories
     }
 
     public HashMap<String, ArrayList<Question>> createCategoriesHashmap() {
+
+        HashMap<String, ArrayList<Question>> categoriesMap = new HashMap<>();
 
         ArrayList<Question> geography = new ArrayList<>();
         geography.add(new Question("What is the country of origin of the Olympic Games?", new String[]{"Scandinavia", "Greece", "China", "Egypt"}, 1));
@@ -70,5 +73,11 @@ public class Categories
         categoriesMap.put("Music", music);
 
         return categoriesMap;
+    }
+    public Question getSingleQuestion(String category) {
+        Random random = new Random();
+        int i = random.nextInt(5);
+        ArrayList<Question> questions = categoriesMap.get(category);
+        return questions.get(i);
     }
 }
