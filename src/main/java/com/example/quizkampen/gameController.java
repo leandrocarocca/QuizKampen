@@ -45,8 +45,8 @@ public class gameController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        int randomNumber = rand.nextInt(50);
-        Question question = questionArray.get(randomNumber);
+        int randomNumber = rand.nextInt(1); //satte bound 1 för vi har inte så många frågor än
+        question = questionArray.get(randomNumber);
         QuestionLabel.setText(question.getDescription());
         answer1Button.setText(question.getAnswers()[0]);
         answer2Button.setText(question.getAnswers()[1]);
