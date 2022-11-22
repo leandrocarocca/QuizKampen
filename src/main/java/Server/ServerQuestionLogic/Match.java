@@ -1,8 +1,8 @@
 package Server.ServerQuestionLogic;
 
 public class Match {
-    int player1Score = 0;
-    int player2Score = 0;
+    private int player1Score = 0;
+    private int player2Score = 0;
     int categoryAmount = 2;
 
     boolean checkRemainingCategories(){
