@@ -11,7 +11,7 @@
    <children>
       <AnchorPane layoutX="63.0" layoutY="56.0" prefHeight="199.0" prefWidth="475.0">
          <children>
-            <Label fx:id="QuestionLabel" alignment="CENTER" layoutX="-5.0" layoutY="91.0" prefHeight="17.0" prefWidth="488.0" text="Question" textAlignment="CENTER" />
+            <Label fx:id="questionLabel" alignment="CENTER" layoutX="-5.0" layoutY="91.0" prefHeight="17.0" prefWidth="488.0" text="Question" textAlignment="CENTER" />
          </children>
       </AnchorPane>
       <GridPane fx:id="gameGridPane" gridLinesVisible="true" layoutX="136.0" layoutY="233.0" prefHeight="125.0" prefWidth="328.0">

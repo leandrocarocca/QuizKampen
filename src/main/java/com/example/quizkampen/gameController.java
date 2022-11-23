@@ -6,15 +6,20 @@ import Server.QuestionsDataBase;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +37,7 @@ public class gameController implements Initializable
     @FXML
     private Button answer4Button;
     @FXML
-    private Label QuestionLabel;
+    private Label questionLabel;
     @FXML
     private GridPane gameGridPane;
 
@@ -51,7 +56,8 @@ public class gameController implements Initializable
     boolean secondPlayerTurn = false;
 
 
-    public void nextTurn(){
+    public void nextTurn() throws IOException
+    {
         // kolla om ronden är slut
         if(currentTurn == numberOfTurnsPerRound){
             // kolla om man kan köra fler ronder
@@ -69,14 +75,14 @@ public class gameController implements Initializable
                     startTurn();
                 }
                 else{
-                    QuestionLabel.setText("SLUT");
+                    questionLabel.setText("SLUT");
                 }
             }
             // Om man kan köra flera ronder så väljer man en ny kategori
             else{
                 // välj ny kategori
-                category = "Food";
                 // starta nya ronden med ny kategori
+                switchToChoiceOfCategoryScene();
                 startRound(category);
             }
         }
@@ -100,7 +106,16 @@ public class gameController implements Initializable
         }
         showCorrectAnswer();
         PauseTransition wait = new PauseTransition(Duration.seconds(2));
-        wait.setOnFinished(event -> nextTurn());
+        wait.setOnFinished(event ->
+        {
+            try
+            {
+                nextTurn();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        });
         wait.play();
     }
 
@@ -134,7 +149,7 @@ public class gameController implements Initializable
         else{
             currentQuestion = questionsGenerated.get(questionsAnswered);
         }
-        QuestionLabel.setText(currentQuestion.getDescription());
+        questionLabel.setText(currentQuestion.getDescription());
         setButtons();
 
     }
@@ -151,9 +166,7 @@ public class gameController implements Initializable
         else{
             currentQuestion = questionsGenerated.get(questionsAnswered);
         }
-
-
-        QuestionLabel.setText(currentQuestion.getDescription());
+        questionLabel.setText(currentQuestion.getDescription());
         setButtons();
     }
 
@@ -179,25 +192,33 @@ public class gameController implements Initializable
         }
     }
 
+
+    public void startQuiz(String cat, int round){
+        this.category = cat;
+        this.currentRound = round + 1;
+        this.currentQuestion = db.getRandomQuestionFromCategory(category);
+        setButtons();
+        questionLabel.setText(currentQuestion.getDescription());
+        questionsGenerated.add(currentQuestion);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        int counter = 0;
-        for(Node n: gameGridPane.getChildren()){
-            try{
-                Button b = (Button) n;
-            }
-            catch (ClassCastException e){
-                System.out.println("This is not a button");
-            }
-            counter++;
-        }
-        System.out.println(counter);
-        this.category = "Sport";
-        this.currentQuestion = db.getRandomQuestionFromCategory(category);
-        this.QuestionLabel.setText(currentQuestion.getDescription());
-        setButtons();
-        questionsGenerated.add(currentQuestion);
-
     }
+
+    public void switchToChoiceOfCategoryScene() throws IOException
+    {
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("choiceOfCategoryScreen.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        HelloController controller = loader.getController();
+        controller.setRound(currentRound);
+        Stage stage = (Stage) answer1Button.getScene().getWindow();
+        stage.setScene(scene);
+        stage.show();
+    }
+
 }
