@@ -1,5 +1,6 @@
 package com.example.quizkampen;
 
+import Server.Question;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,24 +12,16 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class HelloController {
-    @FXML
-    private Label choiceOfCategoryScreen;
-    private Label text;
-
-    @FXML
-    protected void choiceOfCategoryButtonClick() {
-        choiceOfCategoryScreen.setText("Sport");
-        choiceOfCategoryScreen.setText("Geography");
-        choiceOfCategoryScreen.setText("Animals");
-        choiceOfCategoryScreen.setText("Food");
-        choiceOfCategoryScreen.setText("Swedish History");
-        choiceOfCategoryScreen.setText("Music");
-    }
-    int currentRound = 0;
+    int currentRound = 1;
+    int questionsAnswered = 0;
+    ArrayList<Question> questions = new ArrayList<>();
+    boolean player1 = true;
     Scene scene;
     Stage stage;
+    // currentRound = 1
     public void switchToQuizScene(ActionEvent event) throws IOException
     {
         Button button = (Button) event.getSource();
@@ -38,7 +31,7 @@ public class HelloController {
         Parent parent = loader.load();
         scene = new Scene(parent);
         gameController controller = loader.getController();
-        controller.startQuiz(category, currentRound);
+        controller.startQuiz(category, currentRound, questionsAnswered, player1, questions);
         stage = (Stage)((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
         stage.show();
@@ -47,5 +40,18 @@ public class HelloController {
     public void setRound(int round)
     {
         this.currentRound = round;
+    }
+
+    public void setQuestionsAnswered(int qA)
+    {
+        this.questionsAnswered = qA;
+    }
+    public void setPlayer1(boolean b){
+        this.player1 = b;
+    }
+
+    public void setGeneratedQuestions(ArrayList<Question> questionsGenerated)
+    {
+        this.questions = questionsGenerated;
     }
 }

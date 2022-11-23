@@ -1,6 +1,5 @@
 package com.example.quizkampen;
 
-import Server.Categories;
 import Server.Question;
 import Server.QuestionsDataBase;
 import javafx.animation.PauseTransition;
@@ -24,18 +23,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class gameController implements Initializable
 {
     @FXML
     private Button answer1Button;
-    @FXML
-    private Button answer2Button;
-    @FXML
-    private Button answer3Button;
-    @FXML
-    private Button answer4Button;
     @FXML
     private Label questionLabel;
     @FXML
@@ -46,6 +38,7 @@ public class gameController implements Initializable
     String category;
     Question currentQuestion;
     ArrayList<Question> questionsGenerated = new ArrayList<>();
+    ArrayList<String> categoriesArray = new ArrayList<>();
     int questionsAnswered = 0;
     int currentTurn = 1;
     int numberOfTurnsPerRound = 2;
@@ -53,64 +46,76 @@ public class gameController implements Initializable
     int numberOfRoundsPerGame = 2;
     int points = 0;
     boolean firstPlayerTurn = true;
-    boolean secondPlayerTurn = false;
 
 
-    public void nextTurn() throws IOException
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        // kolla om ronden är slut
-        if(currentTurn == numberOfTurnsPerRound){
-            // kolla om man kan köra fler ronder
-            if(currentRound == numberOfRoundsPerGame){
-                System.out.println("Thanks for this round! \n Points: " + points);
-                // ronden är slut så man byter spelare
-                if(firstPlayerTurn){
-                    points = 0;
-                    currentTurn = 0;
-                    currentRound = 1;
-                    firstPlayerTurn = false;
-                    secondPlayerTurn = true;
-                    questionsAnswered = 0;
-                    // rond 1, börja med första frågan
-                    startTurn();
-                }
-                else{
-                    questionLabel.setText("SLUT");
-                }
-            }
-            // Om man kan köra flera ronder så väljer man en ny kategori
-            else{
-                // välj ny kategori
-                // starta nya ronden med ny kategori
-                switchToChoiceOfCategoryScene();
-                startRound(category);
-            }
-        }
-        // om ronden ännu inte är slut så startar en ny turn
-        else{
-            startTurn();
-        }
     }
 
-    public void checkAnswer(ActionEvent actionEvent) throws InterruptedException
+    public void startQuiz(String cat, int round, int qA, boolean player1, ArrayList<Question> questions)
+    {
+        this.firstPlayerTurn = player1;
+        this.currentTurn = 1;
+        this.category = cat;
+        this.currentRound = round;
+        this.questionsAnswered = qA;
+        this.questionsGenerated = questions;
+        if (player1)
+        {
+            this.currentQuestion = db.getRandomQuestionFromCategory(category);
+        } else
+        {
+            this.currentQuestion = questionsGenerated.get(questionsAnswered);
+        }
+        questionLabel.setText(currentQuestion.getDescription());
+        questionsGenerated.add(currentQuestion);
+        categoriesArray.add(category);
+        setButtons();
+    }
+    public void setButtons()
+    {
+        int index = 0;
+        for (Node n : gameGridPane.getChildren())
+        {
+            try
+            {
+                Button b = (Button) n;
+                b.setBackground(Background.fill(Color.LIGHTSKYBLUE));
+                b.setText(currentQuestion.getAnswers()[index]);
+                index++;
+            } catch (ClassCastException e)
+            {
+                System.out.println("Fix");
+            }
+        }
+        System.out.println(this);
+    }
+
+    public void checkAnswer(ActionEvent actionEvent)
     {
         Button button = (Button) actionEvent.getSource();
         // Hämta rätta svaret på frågan
         String correctAnswer = currentQuestion.getAnswers()[currentQuestion.getCorrectAnswerindex()];
-        if(button.getText().equals(correctAnswer)){
-            questionsAnswered ++;
-            points ++;
+        if (button.getText().equals(correctAnswer))
+        {
+            points++;
         }
-        else{
-            questionsAnswered ++;
-        }
+        questionsAnswered++; // questionsAnswered = 2
         showCorrectAnswer();
         PauseTransition wait = new PauseTransition(Duration.seconds(2));
         wait.setOnFinished(event ->
         {
             try
             {
-                nextTurn();
+                if (currentTurn < numberOfTurnsPerRound)
+                {
+                    nextTurn();
+                }
+                else
+                {
+                    nextRound();
+                }
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -119,106 +124,145 @@ public class gameController implements Initializable
         wait.play();
     }
 
-    public void showCorrectAnswer(){
+    public void showCorrectAnswer()
+    {
         String correctAnswer = currentQuestion.getAnswers()[currentQuestion.getCorrectAnswerindex()];
-        for(Node n: gameGridPane.getChildren()){
-            try{
+        for (Node n : gameGridPane.getChildren())
+        {
+            try
+            {
                 Button b = (Button) n;
-                if(b.getText().equals(correctAnswer)){
+                if (b.getText().equals(correctAnswer))
+                {
                     b.setBackground(Background.fill(Color.LIMEGREEN));
-                }
-                else {
+                } else
+                {
                     b.setBackground(Background.fill(Color.RED));
                 }
 
-            }
-            catch (ClassCastException e){
+            } catch (ClassCastException e)
+            {
                 System.out.println("This is not a button");
             }
         }
     }
-    public void startRound(String category){
-        currentTurn = 1;
-        currentRound ++;
+    public void nextTurn()
+    {
+        currentTurn++;
         // om det är den första personen som kör så slumpas frågorna
-        if(firstPlayerTurn){
+        if (firstPlayerTurn)
+        {
             currentQuestion = db.getRandomQuestionFromCategory(category);
             questionsGenerated.add(currentQuestion);
         }
         // om det är den andra personen som kör så tar man samma frågor som första personen körde
-        else{
-            currentQuestion = questionsGenerated.get(questionsAnswered);
-        }
-        questionLabel.setText(currentQuestion.getDescription());
-        setButtons();
-
-    }
-
-
-    public void startTurn(){
-        currentTurn ++;
-        // om det är den första personen som kör så slumpas frågorna
-        if(firstPlayerTurn){
-            currentQuestion = db.getRandomQuestionFromCategory(category);
-            questionsGenerated.add(currentQuestion);
-        }
-        // om det är den andra personen som kör så tar man samma frågor som första personen körde
-        else{
+        else
+        {
             currentQuestion = questionsGenerated.get(questionsAnswered);
         }
         questionLabel.setText(currentQuestion.getDescription());
         setButtons();
     }
 
-    public void reset(){
+    public void nextRound() throws IOException
+    {
+        if (currentRound < numberOfRoundsPerGame)
+        {
+            if(firstPlayerTurn){
+                currentRound++;
+                switchToChoiceOfCategoryScene();
+            }
+            else{
+                currentTurn = 0;
+                currentRound++;
+                category = categoriesArray.get(currentRound - 1);
+                nextTurn();
+            }
+
+        } else if (firstPlayerTurn)
+        {
+            switchPlayer();
+        } else
+        {
+            endGame();
+        }
+    }
+
+    public void reset()
+    {
         // Se till så att man kan välja dessa frågor igen
-        for(Question q : questionsGenerated){
+        for (Question q : questionsGenerated)
+        {
             q.setTaken(false);
         }
     }
 
-    public void setButtons(){
-        int index = 0;
-        for(Node n: gameGridPane.getChildren()){
-            try{
-                Button b = (Button) n;
-                b.setBackground(Background.fill(Color.LIGHTSKYBLUE));
-                b.setText(currentQuestion.getAnswers()[index]);
-                index++;
-            }
-            catch (ClassCastException e){
-                System.out.println("This is not a button");
-            }
-        }
-    }
-
-
-    public void startQuiz(String cat, int round){
-        this.category = cat;
-        this.currentRound = round + 1;
-        this.currentQuestion = db.getRandomQuestionFromCategory(category);
-        setButtons();
-        questionLabel.setText(currentQuestion.getDescription());
-        questionsGenerated.add(currentQuestion);
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle)
+    private void switchPlayer()
     {
+        firstPlayerTurn = false;
+        currentRound = 1;
+        questionsAnswered = 0;
+        category = categoriesArray.get(0);
+        startQuiz(category, 1, 0, false, questionsGenerated);
+    }
+
+    private void endGame() throws IOException
+    {
+        switchToScoreScene();
+        reset();
+        questionLabel.setText("SLUT");
     }
 
     public void switchToChoiceOfCategoryScene() throws IOException
     {
-
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("choiceOfCategoryScreen.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         HelloController controller = loader.getController();
         controller.setRound(currentRound);
+        controller.setQuestionsAnswered(questionsAnswered);
+        controller.setPlayer1(firstPlayerTurn);
+        controller.setGeneratedQuestions(questionsGenerated);
         Stage stage = (Stage) answer1Button.getScene().getWindow();
         stage.setScene(scene);
         stage.show();
     }
 
+    public void switchToStartScene() throws IOException
+    {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("startScene.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) answer1Button.getScene().getWindow();
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void switchToScoreScene() throws IOException
+    {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("scoreScene.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) answer1Button.getScene().getWindow();
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @Override
+    public String toString()
+    {
+        return ", category='" + category + '\'' +
+                ", questionsGenerated=" + questionsGenerated +
+                ", categoriesArray=" + categoriesArray +
+                ", questionsAnswered=" + questionsAnswered +
+                ", currentTurn=" + currentTurn +
+                ", numberOfTurnsPerRound=" + numberOfTurnsPerRound +
+                ", currentRound=" + currentRound +
+                ", numberOfRoundsPerGame=" + numberOfRoundsPerGame +
+                ", firstPlayerTurn=" + firstPlayerTurn +
+                '}';
+    }
 }
