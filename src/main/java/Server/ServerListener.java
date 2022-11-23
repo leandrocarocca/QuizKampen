@@ -6,7 +6,7 @@ import java.net.Socket;
 
 public class ServerListener extends Thread {
     public ServerListener(){
-            int port = 55553;
+            int port = 55559;
             try (ServerSocket ss = new ServerSocket(port);){
                 while(true) {
                     Socket s = ss.accept();

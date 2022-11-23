@@ -9,7 +9,7 @@ public class Client
 {
     public Client() throws IOException
     {
-        int port = 55553;
+        int port = 55559;
         try(
                 Socket socket = new Socket("127.0.0.1",port);
                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
