@@ -12,7 +12,7 @@ public class QuestionsDataBase
 {
     HashMap<String, ArrayList<Question>> db = new HashMap<>();
     int numberOfQuestions;
-    QuestionsDataBase(Path p)
+    public QuestionsDataBase(Path p)
     {
         this.db = loadDataBase(p);
         this.numberOfQuestions = 0;
@@ -84,8 +84,16 @@ public class QuestionsDataBase
 
     public Question getRandomQuestionFromCategory(String category){
         Random rand = new Random();
-        int randomIndex = rand.nextInt(getNumberOfQuestionsFromCategory(category));
-        return getQuestionsFromCategory(category).get(randomIndex);
+        int randomIndex;
+        ArrayList<Question> arrayOfQuestions = getQuestionsFromCategory(category);
+        while (true){
+            randomIndex = rand.nextInt(getNumberOfQuestionsFromCategory(category));
+            Question question = arrayOfQuestions.get(randomIndex);
+            if (!question.isTaken()){
+                question.taken = true;
+                return question;
+            }
+        }
     }
 
     public int getNumberOfQuestionsFromCategory(String category){
