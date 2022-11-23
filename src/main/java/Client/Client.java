@@ -17,22 +17,22 @@ public class Client
                 ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
                 BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+
         ){
             //int categoryAmount = (int) input.readObject();
 
-            for (int i = 0; i < 2; i++) {
-                System.out.println(input.readObject());
-                String categoryChoice = userInput.readLine();
-                output.writeObject(categoryChoice);
-                //int questionAmount = (int) input.readObject();
-                for (int j = 0; j < 2; j++) {
-                    QuestionRound round = (QuestionRound) input.readObject();
-                    System.out.println(round.toString());
-                    String answer = userInput.readLine();
-                    output.writeObject(answer);
-                }
+                for (int i = 0; i < 2; i++) {
+                    String categoryChoice = userInput.readLine();
+                    output.writeObject(categoryChoice);
+                    //int questionAmount = (int) input.readObject();
+                    for (int j = 0; j < 2; j++) {
+                        QuestionRound round = (QuestionRound) input.readObject();
+                        System.out.println(round.toString());
+                        String answer = userInput.readLine();
+                        output.writeObject(answer);
+                    }
 
-            }
+                }
 
 
                  /*
