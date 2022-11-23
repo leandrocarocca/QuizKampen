@@ -3,20 +3,23 @@ package com.example.quizkampen;
 import Server.Categories;
 import Server.Question;
 import Server.QuestionsDataBase;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class gameController implements Initializable
 {
@@ -30,6 +33,8 @@ public class gameController implements Initializable
     private Button answer4Button;
     @FXML
     private Label QuestionLabel;
+    @FXML
+    private GridPane gameGridPane;
 
     Path p = Paths.get("src/main/java/Server/questions.txt");
     QuestionsDataBase db = new QuestionsDataBase(p);
@@ -46,22 +51,7 @@ public class gameController implements Initializable
     boolean secondPlayerTurn = false;
 
 
-
-    public void checkAnswer(ActionEvent actionEvent)
-    {
-        Button button = (Button) actionEvent.getSource();
-        // Hämta rätta svaret på frågan
-        String correctAnswer = currentQuestion.getAnswers()[currentQuestion.getCorrectAnswerindex()];
-        // kolla om spelaren har valt rätt svar
-        if(button.getText().equals(correctAnswer)){
-            System.out.println("KORREKT");
-            questionsAnswered ++;
-            points ++;
-        }
-        else{
-            System.out.println("INKORREKT");
-            questionsAnswered ++;
-        }
+    public void nextTurn(){
         // kolla om ronden är slut
         if(currentTurn == numberOfTurnsPerRound){
             // kolla om man kan köra fler ronder
@@ -90,10 +80,47 @@ public class gameController implements Initializable
                 startRound(category);
             }
         }
+        // om ronden ännu inte är slut så startar en ny turn
         else{
             startTurn();
         }
+    }
 
+    public void checkAnswer(ActionEvent actionEvent) throws InterruptedException
+    {
+        Button button = (Button) actionEvent.getSource();
+        // Hämta rätta svaret på frågan
+        String correctAnswer = currentQuestion.getAnswers()[currentQuestion.getCorrectAnswerindex()];
+        if(button.getText().equals(correctAnswer)){
+            questionsAnswered ++;
+            points ++;
+        }
+        else{
+            questionsAnswered ++;
+        }
+        showCorrectAnswer();
+        PauseTransition wait = new PauseTransition(Duration.seconds(2));
+        wait.setOnFinished(event -> nextTurn());
+        wait.play();
+    }
+
+    public void showCorrectAnswer(){
+        String correctAnswer = currentQuestion.getAnswers()[currentQuestion.getCorrectAnswerindex()];
+        for(Node n: gameGridPane.getChildren()){
+            try{
+                Button b = (Button) n;
+                if(b.getText().equals(correctAnswer)){
+                    b.setBackground(Background.fill(Color.LIMEGREEN));
+                }
+                else {
+                    b.setBackground(Background.fill(Color.RED));
+                }
+
+            }
+            catch (ClassCastException e){
+                System.out.println("This is not a button");
+            }
+        }
     }
     public void startRound(String category){
         currentTurn = 1;
@@ -109,6 +136,7 @@ public class gameController implements Initializable
         }
         QuestionLabel.setText(currentQuestion.getDescription());
         setButtons();
+
     }
 
 
@@ -137,15 +165,34 @@ public class gameController implements Initializable
     }
 
     public void setButtons(){
-        answer1Button.setText(currentQuestion.getAnswers()[0]);
-        answer2Button.setText(currentQuestion.getAnswers()[1]);
-        answer3Button.setText(currentQuestion.getAnswers()[2]);
-        answer4Button.setText(currentQuestion.getAnswers()[3]);
+        int index = 0;
+        for(Node n: gameGridPane.getChildren()){
+            try{
+                Button b = (Button) n;
+                b.setBackground(Background.fill(Color.LIGHTSKYBLUE));
+                b.setText(currentQuestion.getAnswers()[index]);
+                index++;
+            }
+            catch (ClassCastException e){
+                System.out.println("This is not a button");
+            }
+        }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
+        int counter = 0;
+        for(Node n: gameGridPane.getChildren()){
+            try{
+                Button b = (Button) n;
+            }
+            catch (ClassCastException e){
+                System.out.println("This is not a button");
+            }
+            counter++;
+        }
+        System.out.println(counter);
         this.category = "Sport";
         this.currentQuestion = db.getRandomQuestionFromCategory(category);
         this.QuestionLabel.setText(currentQuestion.getDescription());
