@@ -13,10 +13,10 @@
 
     <Label fx:id="choiceOfCategoryScreen"/>
     <Label text="Choose a category:"/>
-    <Button text="Sport" onAction="#choiceOfCategoryButtonClick"/>
-    <Button text="Geography" onAction="#choiceOfCategoryButtonClick"/>
-    <Button text="Animals" onAction="#choiceOfCategoryButtonClick"/>
-    <Button text="Food" onAction="#choiceOfCategoryButtonClick"/>
-    <Button text="Swedish history" onAction="#choiceOfCategoryButtonClick"/>
-    <Button text="Music" onAction="#choiceOfCategoryButtonClick"/>
+    <Button text="Sport" onAction="#switchToQuizScene"/>
+    <Button text="Geography" onAction="#switchToQuizScene"/>
+    <Button text="Animals" onAction="#switchToQuizScene"/>
+    <Button text="Food" onAction="#switchToQuizScene"/>
+    <Button text="Swedish History" onAction="#switchToQuizScene"/>
+    <Button text="Music" onAction="#switchToQuizScene"/>
 </VBox>

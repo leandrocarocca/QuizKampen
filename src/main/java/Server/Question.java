@@ -9,11 +9,23 @@ public class Question implements Serializable
     String description;
     int correctAnswerindex;
     String[] answers;
+    boolean taken;
 
     Question(String d, String[] a, int c){
         this.description = d;
         this.answers = a;
         this.correctAnswerindex = c;
+        this.taken = false;
+    }
+
+    public boolean isTaken()
+    {
+        return taken;
+    }
+
+    public void setTaken(boolean taken)
+    {
+        this.taken = taken;
     }
 
     public String getDescription()
