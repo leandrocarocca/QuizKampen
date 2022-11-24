@@ -1,5 +1,6 @@
 package com.example.quizkampen;
 
+import Server.Player;
 import Server.Question;
 import Server.QuestionsDataBase;
 import javafx.animation.PauseTransition;
@@ -39,6 +40,8 @@ public class gameController implements Initializable
     @FXML
     private GridPane gameGridPane;
 
+    Player player1;
+    Player player2;
     Path p = Paths.get("src/main/java/Server/questions.txt");
     QuestionsDataBase db = new QuestionsDataBase(p);
     String category;
@@ -59,23 +62,17 @@ public class gameController implements Initializable
     {
     }
 
-    public void startQuiz(String cat, int round, int qA, boolean player1, ArrayList<Question> questions)
+    public void startQuiz(String cat, int round,Player p1, Player p2)
     {
-        this.firstPlayerTurn = player1;
+        this.player1 = p1;
+        this.player2 = p2;
         this.currentTurn = 1;
         this.category = cat;
         this.currentRound = round;
-        this.questionsAnswered = qA;
-        this.questionsGenerated = questions;
-        if (player1)
-        {
-            this.currentQuestion = db.getRandomQuestionFromCategory(category);
-        } else
-        {
-            this.currentQuestion = questionsGenerated.get(questionsAnswered);
-        }
+        getQuestion();
+        //this.currentQuestion = db.getRandomQuestionFromCategory(category);
+
         questionLabel.setText(currentQuestion.getDescription());
-        questionsGenerated.add(currentQuestion);
         categoriesArray.add(category);
         setButtons();
     }
@@ -96,10 +93,10 @@ public class gameController implements Initializable
             }
         }
         if(firstPlayerTurn){
-            playerLabel.setText("Player 1");
+            playerLabel.setText("Player: " + player1.getName());
         }
         else{
-            playerLabel.setText("Player 2");
+            playerLabel.setText("Player: " + player2.getName());
         }
         roundLabel.setText("Round: " + currentRound + "/" + numberOfRoundsPerGame);
         turnLabel.setText("Question: " + currentTurn + "/" + numberOfTurnsPerRound);
@@ -112,26 +109,35 @@ public class gameController implements Initializable
         String correctAnswer = currentQuestion.getAnswers()[currentQuestion.getCorrectAnswerindex()];
         if (button.getText().equals(correctAnswer))
         {
-            points++;
+            if(firstPlayerTurn){
+                player1.setPoints(player1.getPoints() + 1);
+            }
+            else{
+                player2.setPoints(player2.getPoints() + 1);
+            }
         }
-        questionsAnswered++; // questionsAnswered = 2
+        questionsAnswered++;
         showCorrectAnswer();
         PauseTransition wait = new PauseTransition(Duration.seconds(2));
         wait.setOnFinished(event ->
         {
-            try
+            if (currentTurn < numberOfTurnsPerRound)
             {
-                if (currentTurn < numberOfTurnsPerRound)
-                {
-                    nextTurn();
-                }
-                else
+                nextTurn();
+            }
+            else if(firstPlayerTurn)
+            {
+                //nextRound();
+                switchPlayer();
+            }
+            else {
+                try
                 {
                     nextRound();
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
                 }
-            } catch (IOException e)
-            {
-                e.printStackTrace();
             }
         });
         wait.play();
@@ -163,16 +169,7 @@ public class gameController implements Initializable
     {
         currentTurn++;
         // om det är den första personen som kör så slumpas frågorna
-        if (firstPlayerTurn)
-        {
-            currentQuestion = db.getRandomQuestionFromCategory(category);
-            questionsGenerated.add(currentQuestion);
-        }
-        // om det är den andra personen som kör så tar man samma frågor som första personen körde
-        else
-        {
-            currentQuestion = questionsGenerated.get(questionsAnswered);
-        }
+        getQuestion();
         questionLabel.setText(currentQuestion.getDescription());
         setButtons();
     }
@@ -181,22 +178,12 @@ public class gameController implements Initializable
     {
         if (currentRound < numberOfRoundsPerGame)
         {
-            if(firstPlayerTurn){
-                currentRound++;
-                switchToChoiceOfCategoryScene();
-            }
-            else{
-                currentTurn = 0;
-                currentRound++;
-                category = categoriesArray.get(currentRound - 1);
-                nextTurn();
-            }
-
-        } else if (firstPlayerTurn)
-        {
-            switchPlayer();
-        } else
-        {
+            currentRound++;
+            firstPlayerTurn = true;
+            questionsGenerated.clear();
+            switchToChoiceOfCategoryScene();
+        }
+        else{
             endGame();
         }
     }
@@ -213,17 +200,16 @@ public class gameController implements Initializable
     private void switchPlayer()
     {
         firstPlayerTurn = false;
-        currentRound = 1;
-        questionsAnswered = 0;
+        //currentRound = 1;
         category = categoriesArray.get(0);
-        startQuiz(category, 1, 0, false, questionsGenerated);
+        questionsAnswered = 0;
+        startQuiz(category, currentRound,player1, player2);
     }
 
     private void endGame() throws IOException
     {
-        switchToScoreScene();
         reset();
-        questionLabel.setText("SLUT");
+        switchToScoreScene();
     }
 
     public void switchToChoiceOfCategoryScene() throws IOException
@@ -233,10 +219,9 @@ public class gameController implements Initializable
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         HelloController controller = loader.getController();
+        controller.setPlayer1(player1);
+        controller.setPlayer2(player2);
         controller.setRound(currentRound);
-        controller.setQuestionsAnswered(questionsAnswered);
-        controller.setPlayer1(firstPlayerTurn);
-        controller.setGeneratedQuestions(questionsGenerated);
         Stage stage = (Stage) answer1Button.getScene().getWindow();
         stage.setScene(scene);
         stage.show();
@@ -265,18 +250,16 @@ public class gameController implements Initializable
         stage.show();
     }
 
-    @Override
-    public String toString()
-    {
-        return ", category='" + category + '\'' +
-                ", questionsGenerated=" + questionsGenerated +
-                ", categoriesArray=" + categoriesArray +
-                ", questionsAnswered=" + questionsAnswered +
-                ", currentTurn=" + currentTurn +
-                ", numberOfTurnsPerRound=" + numberOfTurnsPerRound +
-                ", currentRound=" + currentRound +
-                ", numberOfRoundsPerGame=" + numberOfRoundsPerGame +
-                ", firstPlayerTurn=" + firstPlayerTurn +
-                '}';
+    public void getQuestion(){
+        if (firstPlayerTurn)
+        {
+            currentQuestion = db.getRandomQuestionFromCategory(category);
+            questionsGenerated.add(currentQuestion);
+        }
+        // om det är den andra personen som kör så tar man samma frågor som första personen körde
+        else
+        {
+            currentQuestion = questionsGenerated.get(questionsAnswered);
+        }
     }
 }

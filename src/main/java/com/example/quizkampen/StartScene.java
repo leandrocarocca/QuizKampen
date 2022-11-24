@@ -1,5 +1,6 @@
 package com.example.quizkampen;
 
+import Server.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,16 +16,20 @@ public class StartScene {
 
     @FXML
     public Button startNewButton;
-    Scene scene;
-    Stage stage;
+    String name1 = "Leandro";
+    String name2 = "Bertil";
+    Player player1 = new Player(name1);
+    Player player2 = new Player(name2);
     public void switchToGameScene(ActionEvent event) throws IOException
     {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("choiceOfCategoryScreen.fxml"));
         Parent parent = loader.load();
-
-        scene = new Scene(parent);
-        stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(parent);
+        HelloController controller = loader.getController();
+        controller.setPlayer1(player1);
+        controller.setPlayer2(player2);
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
         stage.show();
     }
