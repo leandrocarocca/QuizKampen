@@ -27,6 +27,12 @@ import java.util.*;
 public class gameController implements Initializable
 {
     @FXML
+    private Label playerLabel;
+    @FXML
+    private Label roundLabel;
+    @FXML
+    private Label turnLabel;
+    @FXML
     private Button answer1Button;
     @FXML
     private Label questionLabel;
@@ -89,7 +95,14 @@ public class gameController implements Initializable
                 System.out.println("Fix");
             }
         }
-        System.out.println(this);
+        if(firstPlayerTurn){
+            playerLabel.setText("Player 1");
+        }
+        else{
+            playerLabel.setText("Player 2");
+        }
+        roundLabel.setText("Round: " + currentRound + "/" + numberOfRoundsPerGame);
+        turnLabel.setText("Question: " + currentTurn + "/" + numberOfTurnsPerRound);
     }
 
     public void checkAnswer(ActionEvent actionEvent)
@@ -242,6 +255,7 @@ public class gameController implements Initializable
 
     private void switchToScoreScene() throws IOException
     {
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("scoreScene.fxml"));
         Parent parent = loader.load();
