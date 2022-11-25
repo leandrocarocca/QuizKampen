@@ -126,7 +126,6 @@ public class QuestionsDataBase
         System.out.println(q.description);
         System.out.println();
     }
-
 }
 
 

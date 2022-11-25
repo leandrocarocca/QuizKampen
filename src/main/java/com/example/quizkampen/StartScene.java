@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class StartScene {
 
@@ -18,7 +19,7 @@ public class StartScene {
     public Button startNewButton;
     String name1 = "Leandro";
     String name2 = "Bertil";
-    Player player1 = new Player(name1);
+    /*Player player1 = new Player(name1);
     Player player2 = new Player(name2);
     public void switchToGameScene(ActionEvent event) throws IOException
     {
@@ -32,5 +33,5 @@ public class StartScene {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
         stage.show();
-    }
+    }*/
 }
