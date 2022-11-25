@@ -1,11 +1,20 @@
 package Server;
 
+import java.net.Socket;
+
 public class Player
 {
+    Socket socket;
     String name;
     int points;
     boolean isFirstPlayer;
-    public Player(String n){
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public Player(String n, Socket socket){
+        this.socket = socket;
         this.name = n;
         this.points = 0;
         this.isFirstPlayer = true;

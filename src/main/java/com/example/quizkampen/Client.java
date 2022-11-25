@@ -1,27 +1,36 @@
-package Client;
+package com.example.quizkampen;
 
-import Server.Question;
-import Server.ServerQuestionLogic.QuestionRound;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
-public class Client
-{
-    public Client() throws IOException
-    {
-        int port = 55559;
-        try(
-                Socket socket = new Socket("127.0.0.1",port);
+public class Client {
+    private final InetAddress address = InetAddress.getLocalHost();
+
+    public Client() throws IOException {
+        int port = 55553;
+
+        try (
+                Socket socket = new Socket(address, port);
                 ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-                BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+                BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in))) {
 
-        ){
-            //int categoryAmount = (int) input.readObject();
+                Main m = new Main();
 
-                for (int i = 0; i < 2; i++) {
+
+                String fromserver = "";
+                fromserver = input.readObject().toString();
+                System.out.println(fromserver);
+
+
+        //int categoryAmount = (int) input.readObject();
+                /*for (int i = 0; i < 2; i++) {
                     String categoryChoice = userInput.readLine();
                     output.writeObject(categoryChoice);
                     //int questionAmount = (int) input.readObject();
@@ -30,10 +39,7 @@ public class Client
                         System.out.println(round.toString());
                         String answer = userInput.readLine();
                         output.writeObject(answer);
-                    }
-
-                }
-
+                    }*/
 
                  /*
             String name = JOptionPane.showInputDialog("Skriv ditt namn: ");
@@ -54,10 +60,14 @@ public class Client
             }
 */
 
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    } catch(
+    ClassNotFoundException e)
+
+    {
+        throw new RuntimeException(e);
     }
+
+}
 
     public static void main(String[] args) throws IOException
     {
@@ -65,5 +75,4 @@ public class Client
     }
 
 }
-
 

@@ -14,19 +14,19 @@ import java.util.ArrayList;
 public class Server extends Thread
 {
     //Protokoll p = new Protokoll();
-
     Socket s;
 
     public Server(Socket s){
         this.s = s;
     }
 
-    public void run(){
+    /*public void run(){
 
         try(
             ObjectOutputStream output = new ObjectOutputStream(s.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(s.getInputStream())){
             Match match = new Match();
+
             while (true){
                 if (match.checkRemainingCategories()){
                     //output.writeObject(match.getCategoryAmount());
@@ -68,7 +68,7 @@ public class Server extends Thread
             System.out.println(message);
             String[] s = {"Jani", "Frida", "Valeria", "Zoe"};
             Question q = new Question("Vem är bäst?", s, 1);
-            output.writeObject(q);*/
+            output.writeObject(q);
 
         }catch(IOException e){
             e.printStackTrace();
@@ -81,5 +81,5 @@ public class Server extends Thread
     {
 
     }
-
+*/
 }
